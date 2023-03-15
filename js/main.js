@@ -1,5 +1,48 @@
 let eventBus = new Vue()
+Vue.component('columns', {
+    props: {
+        check: {
+            type: Boolean
+        }
+    },
+    data() {
+        return {
+            cardsOne: [],
+            cardsTwo: [],
+            cardsThree: [],
+            count: 0,
+            num: 0
+        }
+    },
+    template:
+        `
+    <div class="list-notes">
+    <div class="row-col">
+        <create-card :check="check"></create-card>
+        <div class="col">
+        <card :cardList="cardsOne" :ChangeNote="ChangeNote"></card>
+        </div>
+        <div class="col">
+        <card :cardList="cardsTwo" :ChangeNote="ChangeNote"></card>
+        </div>
+        <div class="col">
+        <card :cardList="cardsThree" :ChangeNote="ChangeNote"></card>
+        </div>
+    </div>
+    </div>
+    `,
+    mounted() {
+        eventBus.$on('card-submitted', createCard => {
+            if (this.cardsOne.length < 3) {
+                this.cardsOne.push(createCard)
+                if (this.cardsOne.length == 3) {
+                    this.check = false
+                }
+            }
 
+        })
+    },
+})
 
 Vue.component('create-card', {
     props: {
