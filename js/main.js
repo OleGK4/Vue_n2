@@ -122,6 +122,51 @@ Vue.component('columns', {
 })
 
 
+Vue.component('card', {
+    template: `
+    <div>
+      <div v-for="createCard in cardList">
+        <div class="cardOne">
+          <p>{{ createCard.title }}</p>
+          <ul>
+              <li class="container" v-for="point in createCard.arrNotes">
+              <div  @click="createCard.count_t = Check(point.pointStatus, createCard.count_t),
+              point.pointStatus = true,
+              ChangeNote(createCard, point.pointTitle)">
+                    {{point.pointTitle}}
+                </div>
+                <div v-if="point.pointTitle != null && point.pointStatus === false"></div >
+                <div v-else-if="point.pointStatus == true">✔️</div>
+              </li>
+          </ul>
+          <div v-if="createCard.date_c != null">
+          {{createCard.date_c}}
+          </div>
+        </div>
+      </div>
+    </div>
+    `,
+    props: {
+        createCard: {
+            type: Object
+        },
+        cardList: [],
+        ChangeNote:{
+            type: Function
+        },
+    },
+    methods: {
+        Check(status, count_t) {
+            if (status == false) {
+                count_t++;
+                return count_t;
+            }
+            return count_t;
+        }
+    }
+})
+
+
 Vue.component('create-card', {
     props: {
         check: {
