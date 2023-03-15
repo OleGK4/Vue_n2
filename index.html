@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/style.css">
-    <script defer src="scripts/vue.min.js"></script>
-    <script defer src="scripts/main.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <script defer src="js/vue.js"></script>
+    <script defer src="js/main.js"></script>
     <title>To do list</title>
 </head>
 <body>
-<div id="app">
 
+<div id="app">
+    <columns :check="check"></columns>
 </div>
 
 </body>
