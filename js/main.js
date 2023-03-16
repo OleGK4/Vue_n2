@@ -21,7 +21,7 @@ Vue.component('columns', {
     <div class="row-col">
         <create-card :check="check"></create-card>
         <div class="col">
-        <card :cardList="cardsOne" :ChangeNote="ChangeNote"></card>
+        <card :cardsTwoLength ="cardsTwo.length" :cardList="cardsOne" :ChangeNote="ChangeNote"></card>
         </div>
         <div class="col">
         <card :cardList="cardsTwo" :ChangeNote="ChangeNote"></card>
@@ -135,7 +135,7 @@ Vue.component('card', {
               ChangeNote(createCard, point.pointTitle)">
                     {{point.pointTitle}}
                 </div>
-                <div v-if="point.pointTitle != null && point.pointStatus === false"></div >
+                <div v-if="point.pointTitle != null && point.pointStatus === false"></div>
                 <div v-else-if="point.pointStatus == true">✔️</div>
               </li>
           </ul>
@@ -153,6 +153,9 @@ Vue.component('card', {
         cardList: [],
         ChangeNote:{
             type: Function
+        },
+        cardsTwoLength: {
+            type: Number
         },
     },
     methods: {
