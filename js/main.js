@@ -12,7 +12,8 @@ Vue.component('columns', {
             cardsTwo: [],
             cardsThree: [],
             count: 0,
-            num: 0
+            num: 0,
+            disableFirstColumn: false // Флаг блокировки первой колонки
         }
     },
     template:
@@ -21,7 +22,7 @@ Vue.component('columns', {
     <div class="row-col">
         <create-card :check="check"></create-card>
         <div class="col">
-        <card :cardList="cardsOne" :ChangeNote="ChangeNote"></card>
+        <card :cardList="cardsOne" :disableFirstColumn="disableFirstColumn" :ChangeNote="ChangeNote"></card>
         </div>
         <div class="col">
         <card :cardList="cardsTwo" :ChangeNote="ChangeNote"></card>
@@ -44,6 +45,9 @@ Vue.component('columns', {
     },
     methods: {
         ChangeNote(card, note) {
+            if (this.cardsTwo.length === 5) { // проверка, что вторая колонка заполнена
+                this.disableFirstColumn = true; // блокировка первой колонки
+            }
 
             this.count = this.countNotes(card);
             this.num = this.numNotes(card, note);
@@ -132,7 +136,9 @@ Vue.component('card', {
               <li class="container" v-for="point in createCard.arrNotes">
               <div  @click="createCard.count_t = Check(point.pointStatus, createCard.count_t),
               point.pointStatus = true,
-              ChangeNote(createCard, point.pointTitle)">
+              ChangeNote(createCard, point.pointTitle)"
+              :class="{ disabled: disableFirstColumn }"
+                >
                     {{point.pointTitle}}
                 </div>
                 <div v-if="point.pointTitle != null && point.pointStatus === false"></div >
@@ -153,6 +159,9 @@ Vue.component('card', {
         cardList: [],
         ChangeNote:{
             type: Function
+        },
+        disableFirstColumn: {
+            type: Boolean,
         },
     },
     methods: {
