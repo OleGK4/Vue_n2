@@ -148,7 +148,7 @@ Vue.component('columns', {
                         this.cardsTwo.push(card);
                         this.cardsOne.splice(this.cardsOne.indexOf(card), 1)
 
-                        if (this.cardsTwo.length === 5) { // проверка, что вторая колонка заполнена
+                        if (this.cardsTwo.length === 5) { // проверка, что вторая колонка заполнена && проверка что выполненные задачи превышают сумму задач поделённое на 2
                             this.disableFirstColumn = true; // блокировка первой колонки
                         }
 
