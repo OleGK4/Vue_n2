@@ -45,29 +45,25 @@ Vue.component('columns', {
     },
     methods: {
         ChangeNote(card, note) {
-            if (this.cardsTwo.length === 5) { // проверка, что вторая колонка заполнена
-                this.disableFirstColumn = true; // блокировка первой колонки
-            }
-
             this.count = this.countNotes(card);
             this.num = this.numNotes(card, note);
 
 
             this.checkFirstColumn(card);
             this.checkSecondColumn(card);
-            if(this.cardsOne[0]) {
+            if (this.cardsOne[0]) {
                 this.count = this.countNotes(this.cardsOne[0]);
                 this.num = this.numNotes(this.cardsOne[0], note);
                 this.checkFirstColumn(this.cardsOne[0]);
                 return;
             }
-            if(this.cardsOne[1]) {
+            if (this.cardsOne[1]) {
                 this.count = this.countNotes(this.cardsOne[1]);
                 this.num = this.numNotes(this.cardsOne[1], note);
                 this.checkFirstColumn(this.cardsOne[1]);
                 return;
             }
-            if(this.cardsOne[2]) {
+            if (this.cardsOne[2]) {
                 this.count = this.countNotes(this.cardsOne[2]);
                 this.num = this.numNotes(this.cardsOne[2], note);
                 this.checkFirstColumn(this.cardsOne[2]);
@@ -104,12 +100,14 @@ Vue.component('columns', {
                         this.cardsTwo.push(card);
                         this.cardsOne.splice(this.cardsOne.indexOf(card), 1)
 
+                        if (this.cardsTwo.length === 5) { // проверка, что вторая колонка заполнена
+                            this.disableFirstColumn = true; // блокировка первой колонки
+                            console.log(1)
+                        }
+
                         if (this.check == false && this.cardsOne.length != 3) // Проверка блокировки на добавления карточки
                             this.check = true;
                     }
-                } else {
-                    card.arrNotes[this.num].pointStatus = false;
-                    card.count_t -= 1;
                 }
             }
         },
@@ -117,8 +115,14 @@ Vue.component('columns', {
             if (this.cardsTwo.indexOf(card) >= 0) { // Проверка, что карточка с 2-ой колонки
                 if ((100 / this.count) * card.count_t == 100) {
                     card.date_c = new Date().toLocaleString();
+
                     this.cardsThree.push(card);
                     this.cardsTwo.splice(this.cardsTwo.indexOf(card), 1);
+
+                    if (this.cardsTwo.length === 4 && this.cardsTwo.length <= 4) {
+                        this.disableFirstColumn = false;
+                        console.log(0)
+                    }
                 }
             }
         },
@@ -157,7 +161,7 @@ Vue.component('card', {
             type: Object
         },
         cardList: [],
-        ChangeNote:{
+        ChangeNote: {
             type: Function
         },
         disableFirstColumn: {
@@ -219,11 +223,11 @@ Vue.component('create-card', {
                 let createCard = {
                     title: this.title,
                     arrNotes: [
-                        { pointTitle: this.note1, pointStatus: false },
-                        { pointTitle: this.note2, pointStatus: false },
-                        { pointTitle: this.note3, pointStatus: false },
-                        { pointTitle: this.note4, pointStatus: false },
-                        { pointTitle: this.note5, pointStatus: false },
+                        {pointTitle: this.note1, pointStatus: false},
+                        {pointTitle: this.note2, pointStatus: false},
+                        {pointTitle: this.note3, pointStatus: false},
+                        {pointTitle: this.note4, pointStatus: false},
+                        {pointTitle: this.note5, pointStatus: false},
                     ],
                     count_t: 0,
                     date_c: null
@@ -249,8 +253,8 @@ Vue.component('create-card', {
 
 let app = new Vue({
     el: '#app',
-    data(){
-        return{
+    data() {
+        return {
             check: true
         }
     }
