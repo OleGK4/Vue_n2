@@ -34,38 +34,86 @@ Vue.component('columns', {
     </div>
     `,
     mounted() {
+        this.cardsOne = JSON.parse(localStorage.getItem("cardsOne")) || [];
+        this.cardsTwo = JSON.parse(localStorage.getItem("cardsTwo")) || [];
+        this.cardsThree = JSON.parse(localStorage.getItem("cardsThree")) || [];
+        this.count = JSON.parse(localStorage.getItem("count")) || [];
+        this.num = JSON.parse(localStorage.getItem("num")) || [];
+
         eventBus.$on('card-submitted', createCard => {
             if (this.cardsOne.length < 3) {
                 this.cardsOne.push(createCard)
+                this.saveCard1()
                 if (this.cardsOne.length == 3) {
                     this.check = false
                 }
             }
         })
     },
+    watch: {
+        cardsOne(newValue) {
+            localStorage.setItem("cardsOne", JSON.stringify(newValue));
+        },
+        cardsTwo(newValue) {
+            localStorage.setItem("cardsTwo", JSON.stringify(newValue));
+        },
+        cardsThree(newValue) {
+            localStorage.setItem("cardsThree", JSON.stringify(newValue));
+        },
+        count(newValue) {
+            localStorage.setItem("count", JSON.stringify(newValue));
+        },
+        num(newValue) {
+            localStorage.setItem("num", JSON.stringify(newValue));
+        }
+    },
     methods: {
+        saveCard1(){
+            localStorage.setItem('cardsOne', JSON.stringify(this.cardsOne));
+        },
+        saveCard2(){
+            localStorage.setItem('cardsTwo', JSON.stringify(this.cardsTwo));
+        },
+        saveCard3(){
+            localStorage.setItem('cardsThree', JSON.stringify(this.cardsThree));
+        },
+        saveCount(){
+            localStorage.setItem('count', JSON.stringify(this.count));
+        },
+        saveNum(){
+            localStorage.setItem('num', JSON.stringify(this.num));
+        },
+
+
         ChangeNote(card, note) {
             this.count = this.countNotes(card);
+            this.saveCount()
             this.num = this.numNotes(card, note);
-
+            this.saveNum()
 
             this.checkFirstColumn(card);
             this.checkSecondColumn(card);
             if (this.cardsOne[0]) {
                 this.count = this.countNotes(this.cardsOne[0]);
+                this.saveCount()
                 this.num = this.numNotes(this.cardsOne[0], note);
+                this.saveNum()
                 this.checkFirstColumn(this.cardsOne[0]);
                 return;
             }
             if (this.cardsOne[1]) {
                 this.count = this.countNotes(this.cardsOne[1]);
+                this.saveCount()
                 this.num = this.numNotes(this.cardsOne[1], note);
+                this.saveNum()
                 this.checkFirstColumn(this.cardsOne[1]);
                 return;
             }
             if (this.cardsOne[2]) {
                 this.count = this.countNotes(this.cardsOne[2]);
+                this.saveCount()
                 this.num = this.numNotes(this.cardsOne[2], note);
+                this.saveNum()
                 this.checkFirstColumn(this.cardsOne[2]);
                 return;
             }
@@ -102,7 +150,6 @@ Vue.component('columns', {
 
                         if (this.cardsTwo.length === 5) { // проверка, что вторая колонка заполнена
                             this.disableFirstColumn = true; // блокировка первой колонки
-                            console.log(1)
                         }
 
                         if (this.check == false && this.cardsOne.length != 3) // Проверка блокировки на добавления карточки
@@ -110,6 +157,7 @@ Vue.component('columns', {
                     }
                 }
             }
+            this.saveCard2()
         },
         checkSecondColumn(card) {
             if (this.cardsTwo.indexOf(card) >= 0) { // Проверка, что карточка с 2-ой колонки
@@ -117,11 +165,11 @@ Vue.component('columns', {
                     card.date_c = new Date().toLocaleString();
 
                     this.cardsThree.push(card);
+                    this.saveCard3()
                     this.cardsTwo.splice(this.cardsTwo.indexOf(card), 1);
 
                     if (this.cardsTwo.length === 4 && this.cardsTwo.length <= 4) {
                         this.disableFirstColumn = false;
-                        console.log(0)
                     }
                 }
             }
@@ -129,6 +177,19 @@ Vue.component('columns', {
     },
 })
 
+Vue.component('time-range-form', {
+    template:`
+    <form>
+        <label></label>
+    </form>
+    `,
+    props: {
+
+    },
+    methods: {
+
+    },
+})
 
 Vue.component('card', {
     template: `
