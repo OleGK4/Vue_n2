@@ -1,7 +1,9 @@
 body {
     background-color: beige;
 }
-
+.disabled {
+    pointer-events: none;
+}
 .col{
     margin: 10px;
     width: 400px;
