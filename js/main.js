@@ -177,18 +177,45 @@ Vue.component('columns', {
     },
 })
 
-Vue.component('time-range-form', {
+
+Vue.component('time-interval-form', {
     template:`
-    <form>
-        <label></label>
+    <form class="text-form-card" @submit.prevent="onSubmit">    
+        <label for="startT">Выбор первой крайней точки интервала</label>
+            <input id="startT" v-model="startT" type="time" placeholder="Первая точка временного интервала">
+            
+        <label for="endT">Выбор второй крайней точки интервала</label>
+            <input id="endT" v-model="endT" type="time" placeholder="Вторая точка временного интервала">     
+                   
+        <button type="submit">Отправить</button>        
     </form>
     `,
-    props: {
-
-    },
     methods: {
-
+        onSubmit() {
+            if (this.startT && this.endT) {
+                let timeIntervalPoints = {
+                    arrNotes: [
+                        {startTime: this.startT, endTime: this.endT},
+                    ],
+                }
+                eventBus.$emit('interval-set', timeIntervalPoints)
+                this.startT = null
+                this.endT = null
+            }
+        }
     },
+
+    data() {
+        return {
+            startT: null,
+            endT: null,
+        }
+    },
+    props: {
+        card: {
+            required: false,
+        }
+    }
 })
 
 Vue.component('card', {
@@ -278,17 +305,16 @@ Vue.component('create-card', {
         }
     },
     methods: {
-
         onSubmit() {
             if (this.note1 && this.note2 && this.note3) {
                 let createCard = {
                     title: this.title,
                     arrNotes: [
-                        {pointTitle: this.note1, pointStatus: false},
-                        {pointTitle: this.note2, pointStatus: false},
-                        {pointTitle: this.note3, pointStatus: false},
-                        {pointTitle: this.note4, pointStatus: false},
-                        {pointTitle: this.note5, pointStatus: false},
+                        {pointTitle: this.note1, pointStatus: false, startDateTime: null, endDateTime: null},
+                        {pointTitle: this.note2, pointStatus: false, startDateTime: null, endDateTime: null},
+                        {pointTitle: this.note3, pointStatus: false, startDateTime: null, endDateTime: null},
+                        {pointTitle: this.note4, pointStatus: false, startDateTime: null, endDateTime: null},
+                        {pointTitle: this.note5, pointStatus: false, startDateTime: null, endDateTime: null},
                     ],
                     count_t: 0,
                     date_c: null
