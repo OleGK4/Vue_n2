@@ -49,6 +49,12 @@ Vue.component('columns', {
                 }
             }
         })
+        eventBus.$on('interval-set', createCard => {
+            if (this.cardsOne[0] && this.cardsOne[0].arrNotes) {
+                this.cardsOne[0].arrNotes.push(createCard);
+                this.saveCard1();
+            }
+        })
     },
     watch: {
         cardsOne(newValue) {
@@ -116,6 +122,9 @@ Vue.component('columns', {
                 this.saveNum()
                 this.checkFirstColumn(this.cardsOne[2]);
                 return;
+            }
+            else if (this.cardsTwo.length <= 4){
+                this.disableFirstColumn = false;
             }
 
 
@@ -190,30 +199,44 @@ Vue.component('time-interval-form', {
         <button type="submit">Отправить</button>        
     </form>
     `,
-    methods: {
-        onSubmit() {
-            if (this.startT && this.endT) {
-                let timeIntervalPoints = {
-                    arrNotes: [
-                        {startTime: this.startT, endTime: this.endT},
-                    ],
-                }
-                eventBus.$emit('interval-set', timeIntervalPoints)
-                this.startT = null
-                this.endT = null
-            }
-        }
-    },
-
     data() {
         return {
             startT: null,
             endT: null,
         }
     },
+
+    methods: {
+        onSubmit() {
+            if (this.startT && this.endT) {
+                let start = new Date(`1970-01-01T${this.startT}:00Z`);
+                let end = new Date(`1970-01-01T${this.endT}:00Z`);
+                let diffMs = end - start;
+                let diff = new Date(diffMs);
+                let hours = diff.getUTCHours();
+                let minutes = diff.getUTCMinutes();
+                let seconds = diff.getUTCSeconds();
+                let formattedDiff = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                let createCard = {
+
+                    interval: formattedDiff,
+                    arrNotes: [
+                        {startTime: this.startT, endTime: this.endT},
+                    ],
+                }
+                eventBus.$emit('interval-set', createCard)
+                this.startT = null
+                this.endT = null
+            }
+        }
+    },
     props: {
         card: {
-            required: false,
+            required: true,
+        }
+    },
+    computed: {
+        calculation() {
         }
     }
 })
@@ -232,6 +255,10 @@ Vue.component('card', {
               :class="{ disabled: disableFirstColumn }"
                 >
                     {{point.pointTitle}}
+                    <li  v-for="(startTime, endTime) in createCard.arrNotes"> {{ startTime, endTime, calculation}}
+                </div>
+                <div>         
+                    <time-interval-form></time-interval-form>
                 </div>
                 <div v-if="point.pointTitle != null && point.pointStatus === false"></div >
                 <div v-else-if="point.pointStatus == true">✔️</div>
@@ -245,6 +272,12 @@ Vue.component('card', {
     </div>
     `,
     props: {
+        calculation: {
+            type: Function
+        },
+        startTime: {
+            type: Object
+        },
         createCard: {
             type: Object
         },
@@ -264,7 +297,7 @@ Vue.component('card', {
             }
             return count_t;
         }
-    }
+    },
 })
 
 
@@ -278,7 +311,7 @@ Vue.component('create-card', {
     <div class="forms-create-card">
     <form class="text-form-card" @submit.prevent="onSubmit">
     <label for="title">Заголовок</label>
-    <input v-model="title" id="title" type="text" placeholder="Заголовок">
+    <input required v-model="title" id="title" type="text" placeholder="Заголовок">
         <input v-model="note1" type="text" placeholder="1 пункт">
         <input v-model="note2" type="text" placeholder="2 пункт">
         <input v-model="note3" type="text" placeholder="3 пункт">
@@ -310,11 +343,11 @@ Vue.component('create-card', {
                 let createCard = {
                     title: this.title,
                     arrNotes: [
-                        {pointTitle: this.note1, pointStatus: false, startDateTime: null, endDateTime: null},
-                        {pointTitle: this.note2, pointStatus: false, startDateTime: null, endDateTime: null},
-                        {pointTitle: this.note3, pointStatus: false, startDateTime: null, endDateTime: null},
-                        {pointTitle: this.note4, pointStatus: false, startDateTime: null, endDateTime: null},
-                        {pointTitle: this.note5, pointStatus: false, startDateTime: null, endDateTime: null},
+                        {pointTitle: this.note1, pointStatus: false},
+                        {pointTitle: this.note2, pointStatus: false},
+                        {pointTitle: this.note3, pointStatus: false},
+                        {pointTitle: this.note4, pointStatus: false},
+                        {pointTitle: this.note5, pointStatus: false},
                     ],
                     count_t: 0,
                     date_c: null
