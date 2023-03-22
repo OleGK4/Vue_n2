@@ -231,9 +231,12 @@ Vue.component('time-interval-form', {
         }
     },
     props: {
-        card: {
-            required: true,
-        }
+        createCard: {
+            type: Object
+        },
+        subtask: {
+            type: Object
+        },
     },
     computed: {
         calculation() {
@@ -257,8 +260,17 @@ Vue.component('card', {
                     {{point.pointTitle}}
                     <li  v-for="(startTime, endTime) in createCard.arrNotes"> {{ startTime, endTime, calculation}}
                 </div>
-                <div>         
-                    <time-interval-form></time-interval-form>
+                <div v-for="(subtask, index) in createCard.arrNotes">         
+                
+                    <form class="text-form-card" @submit.prevent="onSubmit">    
+                        <label for="startT">Выбор первой крайней точки интервала</label>
+                            <input id="startT" v-model="startT" type="time" placeholder="Первая точка временного интервала">
+                            
+                        <label for="endT">Выбор второй крайней точки интервала</label>
+                            <input id="endT" v-model="endT" type="time" placeholder="Вторая точка временного интервала">     
+                                   
+                        <button type="submit">Отправить</button>        
+                    </form>
                 </div>
                 <div v-if="point.pointTitle != null && point.pointStatus === false"></div >
                 <div v-else-if="point.pointStatus == true">✔️</div>
@@ -272,6 +284,9 @@ Vue.component('card', {
     </div>
     `,
     props: {
+        subtask: {
+            type: Object
+        },
         calculation: {
             type: Function
         },
@@ -342,12 +357,13 @@ Vue.component('create-card', {
             if (this.note1 && this.note2 && this.note3) {
                 let createCard = {
                     title: this.title,
+                    interval: null,
                     arrNotes: [
-                        {pointTitle: this.note1, pointStatus: false},
-                        {pointTitle: this.note2, pointStatus: false},
-                        {pointTitle: this.note3, pointStatus: false},
-                        {pointTitle: this.note4, pointStatus: false},
-                        {pointTitle: this.note5, pointStatus: false},
+                        {pointTitle: this.note1, pointStatus: false, startTime: null, endTime: null},
+                        {pointTitle: this.note2, pointStatus: false, startTime: null, endTime: null},
+                        {pointTitle: this.note3, pointStatus: false, startTime: null, endTime: null},
+                        {pointTitle: this.note4, pointStatus: false, startTime: null, endTime: null},
+                        {pointTitle: this.note5, pointStatus: false, startTime: null, endTime: null},
                     ],
                     count_t: 0,
                     date_c: null
