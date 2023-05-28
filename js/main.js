@@ -190,10 +190,10 @@ Vue.component('columns', {
 Vue.component('time-interval-form', {
     template:`
     <form class="text-form-card" @submit.prevent="onSubmit">    
-        <label for="startT">Выбор первой крайней точки интервала</label>
+        <label for="startT">Начало поздадачи</label>
             <input id="startT" v-model="startT" type="time" placeholder="Первая точка временного интервала">
             
-        <label for="endT">Выбор второй крайней точки интервала</label>
+        <label for="endT">Конец поздадачи</label>
             <input id="endT" v-model="endT" type="time" placeholder="Вторая точка временного интервала">     
                    
         <button type="submit">Отправить</button>        
@@ -258,26 +258,16 @@ Vue.component('card', {
               :class="{ disabled: disableFirstColumn }"
                 >
                     {{point.pointTitle}}
-                    <li  v-for="(startTime, endTime) in createCard.arrNotes"> {{ startTime, endTime, calculation}}
                 </div>
-                <div v-for="(subtask, index) in createCard.arrNotes">         
-                
-                    <form class="text-form-card" @submit.prevent="onSubmit">    
-                        <label for="startT">Выбор первой крайней точки интервала</label>
-                            <input id="startT" v-model="startT" type="time" placeholder="Первая точка временного интервала">
-                            
-                        <label for="endT">Выбор второй крайней точки интервала</label>
-                            <input id="endT" v-model="endT" type="time" placeholder="Вторая точка временного интервала">     
-                                   
-                        <button type="submit">Отправить</button>        
-                    </form>
-                </div>
-                <div v-if="point.pointTitle != null && point.pointStatus === false"></div >
-                <div v-else-if="point.pointStatus == true">✔️</div>
+                    <time-interval-form v-if="point.pointTitle && createCard.date_c"></time-interval-form>
+                <div v-if="point.pointStatus">✔️</div>
               </li>
           </ul>
-          <div v-if="createCard.date_c != null">
+          <div v-if="createCard.date_c">
           {{createCard.date_c}}
+          </div>
+          <div v-if="createCard.interval">
+            <p>Heya!</p>
           </div>
         </div>
       </div>
