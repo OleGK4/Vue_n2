@@ -28,7 +28,7 @@ Vue.component('columns', {
         <card :cardList="cardsTwo" :ChangeNote="ChangeNote"></card>
         </div>
         <div class="col">
-        <card :cardList="cardsThree" :ChangeNote="ChangeNote"></card>
+        <card :cardList="cardsThree" :ChangeNote="ChangeNote" :saveCard3="saveCard3"></card>
         </div>
     </div>
     </div>
@@ -184,21 +184,20 @@ Vue.component('time-interval-form', {
     template: `
     <form class="text-form-card" @submit.prevent="onSubmit">    
         <label for="startT">Начало подзадачи</label>
-            <input id="startT" v-model="startT" type="time" placeholder="Первая точка временного интервала">
-            
+        <input id="startT" v-model="startT" type="time" placeholder="Первая точка временного интервала">
+        
         <label for="endT">Конец подзадачи</label>
-            <input id="endT" v-model="endT" type="time" placeholder="Вторая точка временного интервала">     
-                   
+        <input id="endT" v-model="endT" type="time" placeholder="Вторая точка временного интервала">     
+               
         <button type="submit">Отправить</button>        
     </form>
-    `,
+  `,
     data() {
         return {
             startT: null,
             endT: null,
         }
     },
-
     methods: {
         onSubmit() {
             if (this.startT && this.endT) {
@@ -211,21 +210,13 @@ Vue.component('time-interval-form', {
                 let seconds = diff.getUTCSeconds();
                 let formattedDiff = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-                this.createCard.interval = formattedDiff; // Обновление интервала времени
+                // Обновление общей суммы времени
+                this.createCard.interval = addTime(this.createCard.interval, formattedDiff);
 
-
-
-                let updatedNote = {
-                    startTime: this.startT,
-                    endTime: this.endT
-                };
-
-                this.subtask.startTime = this.startT; // Обновление времени начала заметки
-                this.subtask.endTime = this.endT; // Обновление времени окончания заметки
-
+                // Обновление времени начала и окончания заметки
+                this.subtask.startTime = this.startT;
+                this.subtask.endTime = this.endT;
                 this.saveCard3();
-                // Возможно, вам нужно будет передать эти обновленные данные в родительский компонент.
-                // Вы можете использовать события или другие механизмы для обновления данных в родительском компоненте.
 
                 this.startT = '';
                 this.endT = '';
@@ -241,13 +232,31 @@ Vue.component('time-interval-form', {
         },
         saveCard3: {
             type: Function
-        }
+        },
     },
     computed: {
         calculation() {
         }
     }
-})
+});
+
+// Функция для суммирования двух временных интервалов в формате HH:MM:SS
+function addTime(time1, time2) {
+    let [hours1, minutes1, seconds1] = time1.split(':').map(Number);
+    let [hours2, minutes2, seconds2] = time2.split(':').map(Number);
+
+    let totalSeconds = seconds1 + seconds2;
+    let additionalMinutes = Math.floor(totalSeconds / 60);
+    let remainingSeconds = totalSeconds % 60;
+
+    let totalMinutes = minutes1 + minutes2 + additionalMinutes;
+    let additionalHours = Math.floor(totalMinutes / 60);
+    let remainingMinutes = totalMinutes % 60;
+
+    let totalHours = hours1 + hours2 + additionalHours;
+
+    return `${totalHours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
 Vue.component('card', {
     template: `
@@ -268,8 +277,7 @@ Vue.component('card', {
                        v-if="point.pointTitle && createCard.date_c && !point.startTime"
                        :createCard="createCard"
                        :subtask="point"
-                       :ChangeNote="ChangeNote"
-                       :saveCard3="saveCard3"
+                       :saveCard3="saveCard3"                     
                        >                     
                    </time-interval-form>
                 <div v-if="point.startTime">             
@@ -280,11 +288,10 @@ Vue.component('card', {
               </li>
           </ul>
           <div v-if="createCard.date_c">
-          {{createCard.date_c}}
+          <p>Дата: {{ createCard.date_c }}</p>
           </div>
-          <div v-if="createCard.interval">
-            <p>Времени потрачено: {{ createCard.interval }}</p>
-<!--            totalInterval-->
+          <div v-if="createCard.interval != '00:00:00'">
+            <p>Трата времени: {{ createCard.interval }}</p>
           </div>
         </div>
       </div>
@@ -310,19 +317,9 @@ Vue.component('card', {
         disableFirstColumn: {
             type: Boolean,
         },
-    },
-    computed: {
-        totalInterval() {
-            let total = 0;
-            for (let createCard of this.cardList) {
-                if (createCard.interval) {
-                    const [hours, minutes, seconds] = createCard.interval.split(':');
-                    total += Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
-                }
-            }
-            const formattedTotal = new Date(total * 1000).toISOString().substr(11, 8);
-            return formattedTotal;
-        }
+        saveCard3: {
+            type: Function,
+        },
     },
     methods: {
         Check(status, count_t) {
@@ -377,7 +374,7 @@ Vue.component('create-card', {
             if (this.note1 && this.note2 && this.note3) {
                 let createCard = {
                     title: this.title,
-                    interval: null,
+                    interval: '00:00:00',
                     arrNotes: [
                         {pointTitle: this.note1, pointStatus: false, startTime: null, endTime: null},
                         {pointTitle: this.note2, pointStatus: false, startTime: null, endTime: null},
